@@ -67,7 +67,7 @@
           <label class="textOutsideinput">Код с чека:</label>
           <div  v-if="codeError" class="textOutsideinputSecond">возможно такой код уже зарегистрирован...</div>
         </div>
-        <masked-input inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="code" name="browser" mask="11 - 11 - 11" v-bind:class="{ 'picturesInputGreen':codeFilled }" class="picturesInput inputFields" placeholder="00 - 00 - 00" />
+        <masked-input autofocus inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="code" name="browser" mask="11 - 11 - 11" v-bind:class="{ 'picturesInputGreen':codeFilled }" class="picturesInput inputFields" placeholder="00 - 00 - 00" />
       </div>
       <div class="secondInput">
         <div class="wrapper">
@@ -112,7 +112,7 @@ export default {
       name: '',
       info: '',
       isLoad: false,
-      formReady: true
+      formReady: false
     }
   },
   components: {
@@ -192,6 +192,7 @@ export default {
 .Spinner {
   position: absolute;
   right: 8px;
+  top:8px;
 }
 
 @-moz-keyframes spin {
