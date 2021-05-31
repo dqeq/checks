@@ -159,7 +159,15 @@ export default {
             if (response.data.result) {
               this.isSuccess = true
             } else {
-              this.isError = true
+              if (response.data.message && response.data.message.name) {
+                this.isLoad = false
+                this.nameError = true
+              } else if (response.data.message && response.data.message.phone) {
+                this.isLoad = false
+                this.phoneError = true
+              } else {
+                this.isError = true
+              }
             }
           })
       }
@@ -328,7 +336,7 @@ export default {
 
 }
 .number{
-  margin-right: 1.5137rem;
+  margin-right: 2.1rem;
 }
 .linkWrapper{
   align-items: center;

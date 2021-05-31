@@ -1,4 +1,4 @@
-module.exports = function (app, db) {
+module.exports = function (app, db, dadata) {
     app.post('/check', (req, res) => {
         let {name = false, phone = false, code = false} = req.body;
         let result = false;
@@ -14,41 +14,88 @@ module.exports = function (app, db) {
                 res.json({result: result, message: {code: 'Возможна опечатка, проверьте'}});
                 return;
             }
-            if (phone.length !== 11) {
-                res.json({result: result, message: {code: 'Возможна опечатка, проверьте'}});
-                return;
+
+            let qcResult = 5;
+            const dadataConfig   = require('../config/dadata');
+            const dadataPhoneRequest = async () => {
+                const fetch   = require('node-fetch');
+                const url = "https://cleaner.dadata.ru/api/v1/clean/phone";
+                const options = {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Token " + dadataConfig.apiKey,
+                        "X-Secret": dadataConfig.secret
+                    },
+                    body: JSON.stringify([phone])
+                }
+                const res = await fetch(url, options)
+                    .then(response => response.json())
+                    .then(result => {
+                        qcResult = result[0].qc
+                    })
+                    .catch(error => console.log("error", error));
             }
-            if (name.length === 0) {
-                res.json({result: result, message: {code: 'Возможна опечатка, проверьте'}});
-                return;
+            const dadataNameRequest = async () => {
+                const fetch   = require('node-fetch');
+                const url = "https://cleaner.dadata.ru/api/v1/clean/name";
+                const options = {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Token " + dadataConfig.apiKey,
+                        "X-Secret": dadataConfig.secret
+                    },
+                    body: JSON.stringify([name])
+                }
+                const res = await fetch(url, options)
+                    .then(response => response.json())
+                    .then(result => {
+                        name = result[0].result
+                    })
+                    .catch(error => console.log("error", error));
             }
+            const processValues = () => {
+                if (phone.length !== 11 || qcResult !== 0) {
+                    res.json({result: result, message: {phone: 'Возможна опечатка, проверьте'}});
+                    return;
+                }
 
-            //prepare types
-            code = Number(code);
-            phone = Number(phone);
+                if (name.length === 0) {
+                    res.json({result: result, message: {name: 'Возможна опечатка, проверьте'}});
+                    return;
+                }
 
-            //save
-            let collection = db.collection("checks_list");
-            const resultObj = {
-                code: code,
-                phone: phone,
-                name: name,
-            };
+                //prepare types
+                code = Number(code);
+                phone = Number(phone);
 
-            setTimeout(()=>{
-                collection.findOne({code:code}).then((err, item) => {
-                    if (typeof item === 'undefined' && !err) {
-                        collection.insert(resultObj, function (err, result) {
-                            if(!err){
-                                result = true;
-                            }
+                //save
+                let collection = db.collection("checks_list");
+                const resultObj = {
+                    code: code,
+                    phone: phone,
+                    name: name,
+                };
+
+                setTimeout(()=>{
+                    collection.findOne({code:code}).then((err, item) => {
+                        if (typeof item === 'undefined' && !err) {
+                            collection.insert(resultObj, function (err, result) {
+                                if(!err){
+                                    result = true;
+                                }
+                                res.json({result: result});
+                            })
+                        } else {
                             res.json({result: result});
-                        })
-                    } else {
-                        res.json({result: result});
-                    }
-                })
-            },3000)
+                        }
+                    })
+                },3000)
+            };
+            Promise.all([dadataNameRequest(),dadataPhoneRequest()]).then(processValues)
         } else {
             res.json({result: result});
         }
