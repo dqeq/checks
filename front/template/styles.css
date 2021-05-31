@@ -1,0 +1,187 @@
+
+.Button {
+    margin: 0 auto;
+    display: flex;
+    background: #787885;
+    font-size: 1.5rem;
+    FONT-WEIGHT: 500;
+    border-radius: 100px;
+    color: white;
+    border: none;
+    padding: 0.625rem 2rem;
+}
+
+.mainButton {
+    margin: 0 auto;
+    display: flex;
+
+}
+
+.blockText {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.picturesInput {
+    text-align: center;
+    background: url("../../img/jackdaw.svg") no-repeat calc(100% - 1rem);
+    display: block;
+}
+
+.picturesInputGreen {
+
+    background: url(../../img/greenJackdaw.svg) no-repeat calc(100% - 1rem);
+    display: block;
+
+}
+
+.picturesInputRed {
+    background: url("../../img/redJackdaw.svg") no-repeat calc(100% - 1rem);
+    display: block;
+}
+
+.wrapper {
+    width: 100%;
+    display: flex;
+}
+
+.textOutsideinput {
+    text-align: left;
+    flex: 1 0;
+}
+
+.inputFields {
+    width: 100%;
+    color: white;
+    border: 1px solid #00A84F;
+    box-sizing: border-box;
+    border-radius: 45px;
+    font-size: 1.5rem;
+    padding: 0.625rem 1rem;
+
+
+}
+
+
+.main {
+    color: white;
+}
+
+.textOutsideinputSecond {
+    color: #FFD600;
+}
+
+.secondInput {
+    margin-bottom: 1rem;
+}
+
+.firstInput {
+    margin-bottom: 1rem;
+}
+
+.inputMain {
+    margin-bottom: 3rem;
+    font-style: italic;
+    font-size: 0.875rem;
+    color: #E3E5E5;
+    font-weight: 400;
+}
+
+.secondText {
+    font-size: 1.125rem;
+    margin: 1rem 0;
+}
+
+.firstText {
+    font-size: 2.1875rem;
+}
+
+.Spinner img {
+    -webkit-animation: spin 4s linear infinite;
+    -moz-animation: spin 4s linear infinite;
+    animation: spin 4s linear infinite;
+}
+
+.Spinner {
+    position: absolute;
+    right: 8px;
+}
+
+.greenButton {
+    background: #00A84F;
+}
+
+@-moz-keyframes spin {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+.thirdText{
+    font-size: 1.125rem;
+    line-height: 2rem;
+}
+.inst{
+    background: url(../../img/inst.svg) no-repeat 50%;
+    display: block;
+    height: 3rem;
+    margin-bottom: 6rem;
+}
+.house{
+    background: url(../../img/houses.svg) no-repeat 50%;
+    display: block;
+    height: 3rem;
+}
+.secondTex {
+    font-size: 1.125rem;
+    margin: 1rem 0;
+    line-height: 2rem;
+}
+.mainWrapper{
+    margin-bottom: 2.5156rem;
+}
+.whatsApp{
+    margin-right: 1.5137rem;
+}
+.secondWrapper{
+
+}
+.firstWrapper{
+    margin-bottom: 2.5625rem;
+
+}
+.number{
+    margin-right: 1.5137rem;
+}
+.linkWrapper{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+
+}
+.linkNumber{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+}
+.instLink{
+    display: block;
+    width: 4rem;
+    margin: 0 auto 6rem auto;
+}

@@ -1,0 +1,27 @@
+version: "3"
+services:
+  api:
+    volumes:
+      - ./app:/app
+    build:
+      context: ./app
+      dockerfile: ../services/api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    container_name: check-api
+  client:
+    volumes:
+      - ./front/dist:/usr/share/nginx/html
+    build:
+      context: ./front
+      dockerfile: ../services/client/Dockerfile
+    ports:
+      - "80:80"
+    container_name: check-client
+  db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    container_name: check-db
