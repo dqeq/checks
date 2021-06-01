@@ -1,9 +1,9 @@
 <template>
   <div v-if="isSuccess">
-    <SuccessPage />
+    <SuccessPage/>
   </div>
   <div v-else-if="isError">
-    <FailPage />
+    <FailPage/>
   </div>
   <div v-else>
     <div class="blockText">
@@ -11,42 +11,57 @@
         <img src="static/img/spinner.svg">
       </div>
       <div class="firstText">Акция P&amp;G в Зеленом Острове</div>
-      <div class="secondText">Отправьте код с чека и участвуйте в розыгрыше путевки!</div>
+      <div class="secondText">
+        <span v-if="stage === 1">Отправьте код с чека и участвуйте в розыгрыше путевки!</span>
+        <span v-else-if="stage === 2">Скажите ваш телефон чтобы<br/>мы могли сообщить о выигрыше :)</span>
+        <span v-else>Как вас зовут?</span>
+      </div>
     </div>
     <div class="inputMain">
-      <div class="firstInput">
+      <div v-bind:class="{ 'hidden':stage !== 1 }" class="firstInput">
         <div class="wrapper">
           <label class="textOutsideinput">Код с чека:</label>
-          <div  v-if="codeError" class="textOutsideinputSecond">возможно такой код уже зарегистрирован...</div>
+          <div v-if="codeError" class="textOutsideinputSecond">возможно такой код уже зарегистрирован...</div>
         </div>
-        <masked-input autofocus inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="code" name="browser" mask="11 - 11 - 11" v-bind:class="{ 'picturesInputGreen':codeFilled }" class="picturesInput inputFields" placeholder="00 - 00 - 00" />
+        <masked-input autofocus inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="code"
+                      mask="11 - 11 - 11" v-bind:class="{ 'picturesInputGreen':codeFilled }"
+                      class="picturesInput inputFields" placeholder="00 - 00 - 00"/>
       </div>
-      <div class="secondInput">
+      <div v-bind:class="{ 'hidden':stage !== 2 }" class="secondInput">
         <div class="wrapper">
           <label class="textOutsideinput">Ваш номер телефона:</label>
-          <div  v-if="phoneError" class="textOutsideinputSecond">возможно опечатка в номере телефона...</div>
+          <div v-if="phoneError" class="textOutsideinputSecond">возможно опечатка в номере телефона...</div>
         </div>
-        <masked-input inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="phone" name="browser"
-                      v-bind:class="{ 'picturesInputGreen':phoneFilled, 'picturesInputRed':phoneError }" class=" picturesInput inputFields" mask="\+\7 (111) 111 - 11 - 11" placeholder="+7 ( 999 ) 000 - 00 - 00" />
+        <masked-input inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="phone"
+                      v-bind:class="{ 'picturesInputGreen':phoneFilled, 'picturesInputRed':phoneError }"
+                      class=" picturesInput inputFields" mask="\+\7 (111) 111 - 11 - 11"
+                      placeholder="+7 ( 999 ) 000 - 00 - 00"/>
       </div>
-      <div class="thirdInput">
+      <div v-bind:class="{ 'hidden':stage !== 3 }" class="thirdInput">
         <div class="wrapper">
           <label class="textOutsideinput">Ваше имя:</label>
-          <div  v-if="nameError" class="textOutsideinputSecond">возможно опечатка в имени...</div>
+          <div v-if="nameError" class="textOutsideinputSecond">возможно опечатка в имени...</div>
         </div>
-        <input @input="validate" type="text" v-model="name" v-bind:class="{ 'picturesInputGreen':nameFilled, 'picturesInputRed':nameError }" class=" picturesInput inputFields" placeholder="Имя" />
+        <input @input="validate" type="text" v-model="name"
+               name="browser" v-bind:class="{ 'picturesInputGreen':nameFilled, 'picturesInputRed':nameError }"
+               class=" picturesInput inputFields" placeholder="Имя"/>
       </div>
     </div>
     <div class="mainButton">
-      <button  v-on:click="sendData" v-bind:class="{ 'greenButton':formReady }" class="Button">отправить</button>
+      <button v-if="stage === 3 || stage === 2" v-on:click="nextStage"
+              v-bind:class="{ 'greenButton':currentFieldFilled }" class="Button">ок
+      </button>
+      <button v-else v-on:click="nextStage" v-bind:class="{ 'greenButton':currentFieldFilled }" class="Button">
+        отправить
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import MaskedInput from 'vue-masked-input'
-import FailPage from './FailPage'
 import SuccessPage from './SuccessPage'
+import FailPage from './FailPage'
 import axios from 'axios'
 
 export default {
@@ -63,7 +78,9 @@ export default {
       codeError: false,
       nameFilled: false,
       nameChecked: false,
+      currentFieldFilled: false,
       nameError: false,
+      stage: 1,
       phone: '',
       code: '',
       name: '',
@@ -110,10 +127,31 @@ export default {
       this.phoneFilled = phoneValue.length === 11 && !this.phoneError && this.phoneChecked
       this.codeFilled = codeValue.length === 6
       this.formReady = this.nameFilled && this.phoneFilled && this.codeFilled
+      switch (this.stage) {
+        case 1:
+          this.currentFieldFilled = this.codeFilled
+          break
+        case 2:
+          this.currentFieldFilled = this.phoneFilled
+          break
+        case 3:
+          this.currentFieldFilled = this.nameFilled
+          break
+      }
     },
     validate () {
       if (!this.isLoad) {
         this.validateData(this.prepareData())
+      }
+    },
+    nextStage () {
+      if (this.currentFieldFilled) {
+        if (this.stage !== 3) {
+          this.stage += 1
+          this.currentFieldFilled = false
+        } else {
+          this.sendData()
+        }
       }
     },
     sendData () {
@@ -190,6 +228,10 @@ export default {
 </script>
 
 <style scoped>
+.hidden {
+  display: none;
+}
+
 .blockText {
   text-align: center;
   margin: 1.5rem 0;
@@ -213,7 +255,7 @@ export default {
 .Spinner {
   position: absolute;
   right: 8px;
-  top:8px;
+  top: 8px;
 }
 
 @-moz-keyframes spin {

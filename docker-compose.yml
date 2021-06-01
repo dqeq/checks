@@ -3,6 +3,7 @@ services:
   api:
     volumes:
       - ./app:/app
+      - ./front:/front
     build:
       context: ./app
       dockerfile: ../services/api/Dockerfile
@@ -10,13 +11,29 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - front
     container_name: check-api
+  front:
+    volumes:
+      - ./front:/front
+      - build:/front/dist:rw
+    build:
+      context: ./front
+      dockerfile: ../services/front/Dockerfile
+    container_name: front
   client:
     volumes:
-      - ./front/dist:/usr/share/nginx/html
+      - type: volume
+        source: build
+        target: /usr/share/nginx/html
+        read_only: true
+    depends_on:
+      - api
+      - front
     build:
       context: ./front
       dockerfile: ../services/client/Dockerfile
+
     ports:
       - "80:80"
     container_name: check-client
@@ -25,3 +42,6 @@ services:
     ports:
       - "27017:27017"
     container_name: check-db
+
+volumes:
+  build:
