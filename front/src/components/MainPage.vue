@@ -19,7 +19,7 @@
           <label class="textOutsideinput">Код с чека:</label>
           <div  v-if="codeError" class="textOutsideinputSecond">возможно такой код уже зарегистрирован...</div>
         </div>
-        <masked-input autofocus inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="code" name="browser" mask="11 - 11 - 11" v-bind:class="{ 'picturesInputGreen':codeFilled }" class="picturesInput inputFields" placeholder="00 - 00 - 00" />
+        <masked-input ref="codeInput" autofocus inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="code" name="browser" mask="11 - 11 - 11" v-bind:class="{ 'picturesInputGreen':codeFilled }" class="picturesInput first inputFields" placeholder="00 - 00 - 00" />
       </div>
       <div class="secondInput">
         <div class="wrapper">
@@ -76,6 +76,29 @@ export default {
     MaskedInput,
     SuccessPage,
     FailPage
+  },
+  mounted () {
+    document.onreadystatechange = () => {
+      const runFocus = (name) => {
+        const inputElement = document.querySelector(`input.${name}`)
+        console.log(inputElement)
+        const newHandler = (e) => {
+          inputElement.focus()
+        }
+        inputElement.onclick = newHandler
+        inputElement.click()
+        inputElement.focus()
+      }
+      if (document.readyState === 'complete') {
+        let isFirstTime = false
+        document.querySelector('body').onclick = () => {
+          if (!isFirstTime) {
+            isFirstTime = true
+            runFocus('first')
+          }
+        }
+      }
+    }
   },
   methods: {
     reload () {

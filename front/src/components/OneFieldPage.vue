@@ -25,7 +25,7 @@
         </div>
         <masked-input autofocus inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="code"
                       mask="11 - 11 - 11" v-bind:class="{ 'picturesInputGreen':codeFilled }"
-                      class="picturesInput inputFields" placeholder="00 - 00 - 00"/>
+                      class="picturesInput first inputFields" placeholder="00 - 00 - 00"/>
       </div>
       <div v-bind:class="{ 'hidden':stage !== 2 }" class="secondInput">
         <div class="wrapper">
@@ -34,7 +34,7 @@
         </div>
         <masked-input inputmode="numeric" type="tel" pattern="[0-9]*" @input="validate" v-model="phone"
                       v-bind:class="{ 'picturesInputGreen':phoneFilled, 'picturesInputRed':phoneError }"
-                      class=" picturesInput inputFields" mask="\+\7 (111) 111 - 11 - 11"
+                      class=" picturesInput second inputFields" mask="\+\7 (111) 111 - 11 - 11"
                       placeholder="+7 ( 999 ) 000 - 00 - 00"/>
       </div>
       <div v-bind:class="{ 'hidden':stage !== 3 }" class="thirdInput">
@@ -44,7 +44,7 @@
         </div>
         <input @input="validate" type="text" v-model="name"
                name="browser" v-bind:class="{ 'picturesInputGreen':nameFilled, 'picturesInputRed':nameError }"
-               class=" picturesInput inputFields" placeholder="Имя"/>
+               class=" picturesInput last inputFields" placeholder="Имя"/>
       </div>
     </div>
     <div class="mainButton">
@@ -63,6 +63,17 @@ import MaskedInput from 'vue-masked-input'
 import SuccessPage from './SuccessPage'
 import FailPage from './FailPage'
 import axios from 'axios'
+
+const runFocus = (name) => {
+  const inputElement = document.querySelector(`input.${name}`)
+  console.log(inputElement)
+  const newHandler = (e) => {
+    inputElement.focus()
+  }
+  inputElement.onclick = newHandler
+  inputElement.click()
+  inputElement.focus()
+}
 
 export default {
   data () {
@@ -93,6 +104,20 @@ export default {
     MaskedInput,
     SuccessPage,
     FailPage
+  },
+  mounted () {
+    document.onreadystatechange = () => {
+      console.log(document.readyState)
+      if (document.readyState === 'complete') {
+        let isFirstTime = false
+        document.querySelector('body').onclick = () => {
+          if (!isFirstTime) {
+            isFirstTime = true
+            runFocus('first')
+          }
+        }
+      }
+    }
   },
   methods: {
     reload () {
@@ -149,6 +174,11 @@ export default {
         if (this.stage !== 3) {
           this.stage += 1
           this.currentFieldFilled = false
+          if (this.stage === 2) {
+            setTimeout(() => (runFocus('second')), 500)
+          } else {
+            setTimeout(() => (runFocus('last')), 500)
+          }
         } else {
           this.sendData()
         }
